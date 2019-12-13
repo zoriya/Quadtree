@@ -9,14 +9,14 @@
 #include "quadtree_internal.h"
 #include <stdlib.h>
 
-qt_object **qt_filter_objects(quadtree *tree, qt_intrect rect)
+qt_object *qt_filter_objects(quadtree *tree, qt_intrect rect)
 {
-    qt_object **objs = my_calloc(tree->capacity, sizeof(qt_object *));
+    qt_object *objs = my_calloc(tree->capacity, sizeof(qt_object *));
     int len = 0;
 
-    for (int i = 0; tree->objects[i]; i++) {
-        if (qt_collide(((qt_object *)tree->objects[i])->rect, rect))
-            objs[len++] = (qt_object *)tree->objects[i];
+    for (int i = 0; ((qt_object *)tree->objects)[i].id != -1; i++) {
+        if (qt_collide(((qt_object *)tree->objects)[i].rect, rect))
+            objs[len++] = ((qt_object *)tree->objects)[i];
     }
     return (objs);
 }

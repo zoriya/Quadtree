@@ -14,6 +14,6 @@ void *my_calloc(int capacity, int size)
 
     if (!alloc)
         return (NULL);
-    memset(alloc, 0, capacity * size);
+    memset(alloc, -1, capacity * size);
     return (alloc);
 }

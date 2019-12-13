@@ -18,7 +18,7 @@ quadtree *qt_create(qt_intrect rect, int capacity)
         return (NULL);
     tree->rect = rect;
     tree->capacity = capacity;
-    tree->objects = my_calloc(capacity, sizeof(*tree->objects));
+    tree->objects = my_calloc(capacity, sizeof(qt_object));
     if (!tree->objects) {
         free(tree);
         return (NULL);
@@ -35,21 +35,22 @@ bool qt_collide(qt_intrect r1, qt_intrect r2)
     return (true);
 }
 
-int qt_add(quadtree *tree, qt_object *obj)
+int qt_add(quadtree *tree, qt_object obj)
 {
     int i = 0;
 
     if (tree->capacity > 0) {
-        while (tree->objects[i++]);
+        while (((qt_object *)tree->objects)[i].id != -1) 
+            i++;
         if (i < tree->capacity)
-            tree->objects[i] = obj;
+            ((qt_object *)tree->objects)[i] = obj;
         else
             qt_split(tree);
         return (0);
     }
     for (i = 0; i < 4; i++) {
-        if (qt_collide(((qt_object *)tree->objects[i])->rect, obj->rect))
-            qt_add((quadtree *)tree->objects[i], obj);
+        if (qt_collide(((qt_object *)tree->objects)[i].rect, obj.rect))
+            qt_add(((quadtree **)tree->objects)[i], obj);
     }
     return (0);
 }
@@ -60,25 +61,25 @@ qt_object *qt_getobj(quadtree *tree, int id)
 
     if (tree->capacity == -1) {
         for (int i = 0; i < 4; i++) {
-            obj = qt_getobj(tree->objects[i], id);
+            obj = qt_getobj(((quadtree **)tree->objects)[i], id);
             if (obj)
                 return (obj);
         }
         return (NULL);
     }
-    for (int i = 0; tree->objects[i]; i++) {
-        if (((qt_object *)tree->objects[i])->id == id)
-            return ((qt_object *)tree->objects[i]);
+    for (int i = 0; ((qt_object *)tree->objects)[i].id != -1; i++) {
+        if (((qt_object *)tree->objects)[i].id == id)
+            return (&((qt_object *)tree->objects)[i]);
     }
     return (NULL);
 }
 
-int qt_update(quadtree *tree, qt_object *obj)
+int qt_update(quadtree *tree, qt_object obj)
 {
-    qt_object *o = qt_getobj(tree, obj->id);
+    qt_object *o = qt_getobj(tree, obj.id);
 
     if (!o)
-        return (-1);
-    *o = *obj;
+        return (qt_add(tree, obj));
+    *o = obj;
     return (0);
 }
