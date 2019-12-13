@@ -75,3 +75,12 @@ qt_collision collision_get_info(quadtree *tree, int id)
     }
     return (col);
 }
+
+bool qt_collide(qt_intrect r1, qt_intrect r2)
+{
+    if (r1.x + r1.w < r2.x || r2.x + r2.w < r1.x)
+        return (false);
+    if (r1.y + r1.h < r2.y || r2.y + r2.h < r1.y)
+        return (false);
+    return (true);
+}
