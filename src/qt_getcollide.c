@@ -54,7 +54,7 @@ qt_collision collision_complete(qt_collision col, qt_intrect r1, qt_intrect r2)
     return (col);
 }
 
-qt_collision collision_get_info(quadtree *tree, int entity_id)
+qt_collision collision_get_info(quadtree *tree, int id)
 {
     qt_collision col = (qt_collision){MAXCOL, MAXCOL, MAXCOL, MAXCOL};
     qt_object *obj;
@@ -62,11 +62,11 @@ qt_collision collision_get_info(quadtree *tree, int entity_id)
 
     if (tree->capacity == -1) {
         for (int i = 0; i < 4; i++) {
-            col = collision_get_info(((quadtree **)tree->objects)[i], entity_id);
+            col = collision_get_info(((quadtree **)tree->objects)[i], id);
         }
         return ((qt_collision){MAXCOL, MAXCOL, MAXCOL, MAXCOL});
     }
-    obj = qt_getobj(tree, entity_id);
+    obj = qt_getobj(tree, id);
     if (!obj)
         return (col);
     for (int i = 0; ((qt_object *)tree->objects)[i].id != -1; i++) {

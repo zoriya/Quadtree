@@ -40,7 +40,7 @@ int qt_add(quadtree *tree, qt_object obj)
     int i = 0;
 
     if (tree->capacity > 0) {
-        while (((qt_object *)tree->objects)[i].id != -1) 
+        while (((qt_object *)tree->objects)[i].id != -1)
             i++;
         if (i < tree->capacity)
             ((qt_object *)tree->objects)[i] = obj;
@@ -76,10 +76,10 @@ qt_object *qt_getobj(quadtree *tree, int id)
 
 int qt_update(quadtree *tree, qt_object obj)
 {
-    qt_object *o = qt_getobj(tree, obj.id);
+    qt_object *ob = qt_getobj(tree, obj.id);
 
-    if (!o)
+    if (!ob)
         return (qt_add(tree, obj));
-    *o = obj;
+    *ob = obj;
     return (0);
 }
