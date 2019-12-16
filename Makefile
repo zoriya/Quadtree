@@ -7,7 +7,7 @@
 
 SRC = src/quadtree.c \
 	src/qt_split.c \
-	src/qt_getcollide.c \
+	src/qt_collide.c \
 	src/qt_destroy.c \
 	src/utility/calloc.c
 

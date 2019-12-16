@@ -22,7 +22,7 @@ bool collision_overlapx(qt_intrect r1, qt_intrect r2)
 
 bool collision_overlapy(qt_intrect r1, qt_intrect r2)
 {
-    if (r1.y >= r2.y && r2.y < r1.y - r1.h)
+    if (r1.y >= r2.y && r2.y > r1.y - r1.h)
         return (true);
     if (r1.y - r1.h >= r2.y && r1.y - r1.h <= r2.y - r2.h)
         return (true);
