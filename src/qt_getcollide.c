@@ -11,22 +11,22 @@
 //X1 is on the line or X2 is on the line or both X are on each side of the map 
 bool collision_overlapx(qt_intrect r1, qt_intrect r2)
 {
-    if (r1.x > r2.x && r1.x < r2.x + r2.w)
+    if (r1.x >= r2.x && r1.x <= r2.x + r2.w)
         return (true);
-    if (r1.x + r1.w > r2.x && r1.x + r1.w < r2.x + r2.w)
+    if (r1.x + r1.w > r2.x && r1.x + r1.w <= r2.x + r2.w)
         return (true);
-    if (r1.x < r2.x && r1.x + r1.w > r2.x + r2.w)
+    if (r1.x <= r2.x && r1.x + r1.w >= r2.x + r2.w)
         return (true);
     return (false);
 }
 
 bool collision_overlapy(qt_intrect r1, qt_intrect r2)
 {
-    if (r1.y > r2.y && r1.y < r2.y + r2.h)
+    if (r1.y >= r2.y && r2.y < r1.y - r1.h)
         return (true);
-    if (r1.y + r1.h > r2.y && r1.y + r1.h < r2.y + r2.h)
+    if (r1.y - r1.h >= r2.y && r1.y - r1.h <= r2.y - r2.h)
         return (true);
-    if (r1.y < r2.y && r1.y + r1.h > r2.y + r2.h)
+    if (r1.y <= r2.y && r1.y - r1.h >= r2.y - r2.h)
         return (true);
     return (false);
 }
@@ -40,10 +40,10 @@ qt_collision collision_complete(qt_collision col, qt_intrect r1, qt_intrect r2)
             col.distance_left = MIN(col.distance_left, r1.x - (r2.x + r2.w));
     }
     if (collision_overlapx(r1, r2)) {
-        if (r1.y < r2.y)
-            col.distance_top = MIN(col.distance_top, r1.y - (r2.y + r2.h));
-        if (r2.y < r1.y)
-            col.distance_down = MIN(col.distance_down, r1.y - (r2.y + r2.h));
+        if (r1.y > r2.y)
+            col.distance_down = MIN(col.distance_top, r1.y - (r2.y + r2.h));
+        if (r2.y > r1.y)
+            col.distance_top = MIN(col.distance_down, r2.y - (r1.y + r1.h));
     }
     col.distance_down = MAX(0, col.distance_down);
     col.distance_top = MAX(0, col.distance_top);
