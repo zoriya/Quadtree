@@ -31,17 +31,19 @@ int qt_add(quadtree *tree, qt_object obj)
     int i = 0;
 
     if (tree->capacity > 0) {
-        while (((qt_object *)tree->objects)[i].id != -1)
+        while (i < tree->capacity && ((qt_object *)tree->objects)[i].id != -1)
             i++;
         if (i < tree->capacity)
             ((qt_object *)tree->objects)[i] = obj;
-        else
+        else {
             qt_split(tree);
+            qt_add(tree, obj);
+        }
         return (0);
     }
     for (i = 0; i < 4; i++) {
-        if (qt_collide(((qt_object *)tree->objects)[i].rect, obj.rect))
-            qt_add(((quadtree **)tree->objects)[i], obj);
+        if (qt_collide(((quadtree *)tree->objects)[i].rect, obj.rect))
+            qt_add(&((quadtree *)tree->objects)[i], obj);
     }
     return (0);
 }
@@ -49,6 +51,7 @@ int qt_add(quadtree *tree, qt_object obj)
 qt_object *qt_getobj(quadtree *tree, int id)
 {
     qt_object *obj;
+    int cap = tree->capacity;
 
     if (tree->capacity == -1) {
         for (int i = 0; i < 4; i++) {
@@ -58,7 +61,7 @@ qt_object *qt_getobj(quadtree *tree, int id)
         }
         return (NULL);
     }
-    for (int i = 0; ((qt_object *)tree->objects)[i].id != -1; i++) {
+    for (int i = 0; i < cap && ((qt_object *)tree->objects)[i].id != -1; i++) {
         if (((qt_object *)tree->objects)[i].id == id)
             return (&((qt_object *)tree->objects)[i]);
     }
@@ -72,13 +75,14 @@ int qt_remove(quadtree *tree, int id)
 
     if (tree->capacity == -1) {
         for (int i = 0; i < 4; i++) {
-            qt_remove(((quadtree **)tree->objects)[i], id);
+            qt_remove(&((quadtree *)tree->objects)[i], id);
         }
+        return (0);
     }
     objects = (qt_object *)tree->objects;
     while (last > 0 && ((qt_object *)tree->objects)[last].id == -1)
         last--;
-    for (int i = 0; objects[i].id != -1; i++) {
+    for (int i = 0; i < tree->capacity && objects[i].id != -1; i++) {
         if (objects[i].id == id) {
             objects[i] = objects[last];
             objects[last] = (qt_object){-1, {-1, -1, -1, -1}};
