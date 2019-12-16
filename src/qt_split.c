@@ -49,6 +49,7 @@ quadtree *qt_split(quadtree *tree)
         ret[i].objects = (void *)qt_filter_objects(tree, ret[i].rect);
     }
     tree->capacity = -1;
+    free(tree->objects);
     tree->objects = (void *)ret;
     return (ret);
 }

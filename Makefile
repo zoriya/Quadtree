@@ -8,6 +8,7 @@
 SRC = src/quadtree.c \
 	src/qt_split.c \
 	src/qt_getcollide.c \
+	src/qt_destroy.c \
 	src/utility/calloc.c
 
 OBJ = $(SRC:%.c=%.o)

@@ -48,3 +48,4 @@ qt_collision collision_get_info(quadtree *tree, int entity_id);
 bool qt_collide(qt_intrect r1, qt_intrect r2);
 qt_object *qt_getobj(quadtree *tree, int id);
 int qt_update(quadtree *tree, qt_object obj);
+void qt_destroy(quadtree *tree);
