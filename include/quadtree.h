@@ -15,8 +15,8 @@ typedef struct quadtree quadtree;
 
 typedef struct qt_intrect
 {
-    int x;
-    int y;
+    float x;
+    float y;
     int h;
     int w;
 } qt_intrect;
@@ -29,10 +29,10 @@ typedef struct qt_object
 
 typedef struct qt_collision
 {
-    int distance_left;
-    int distance_right;
-    int distance_top;
-    int distance_down;
+    float distance_left;
+    float distance_right;
+    float distance_top;
+    float distance_down;
 } qt_collision;
 
 struct quadtree
