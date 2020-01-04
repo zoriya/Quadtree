@@ -75,8 +75,11 @@ qt_collision collision_get_real_info(quadtree *tree, int id, qt_collision col)
         return (col);
     for (int i = 0; i < cap && ((qt_object *)tree->objects)[i].id != -1; i++) {
         tmp = &((qt_object *)tree->objects)[i];
-        if (tmp->id == id)
+        if (tmp->id == id || !collision_can_see(obj->layer, tmp->layer)) {
+            if (tmp->id != id)
+                printf("%d (id %d) VS %d (id %d)\n", obj->layer, id, tmp->layer, tmp->id);
             continue;
+        }
         col = collision_complete(col, obj->rect, tmp->rect);
     }
     return (col);

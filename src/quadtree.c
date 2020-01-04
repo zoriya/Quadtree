@@ -85,7 +85,7 @@ int qt_remove(quadtree *tree, int id)
     for (int i = 0; i < tree->capacity && objects[i].id != -1; i++) {
         if (objects[i].id == id) {
             objects[i] = objects[last];
-            objects[last] = (qt_object){-1, {-1, -1, -1, -1}};
+            objects[last] = (qt_object){-1, {-1, -1, -1, -1}, -1};
         }
     }
     return (0);
