@@ -5,7 +5,7 @@
 ** qt_layer
 */
 
-#include "quadtree.h"
+#include "quadtree_internal.h"
 #include <stdbool.h>
 
 bool collision_can_see(int l1, int l2)

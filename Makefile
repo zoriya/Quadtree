@@ -10,7 +10,9 @@ SRC = src/quadtree.c \
 	src/qt_collide.c \
 	src/qt_destroy.c \
 	src/qt_layer.c \
-	src/utility/calloc.c
+	src/qt_position_overlap.c \
+	src/utility/calloc.c \
+	src/array.c
 
 OBJ = $(SRC:%.c=%.o)
 

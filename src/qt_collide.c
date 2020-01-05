@@ -7,86 +7,73 @@
 
 #include "quadtree.h"
 #include "quadtree_internal.h"
+#include "array.h"
 
-//X1 is on the line or X2 is on the line or both X are on each side of the map 
-bool collision_overlapx(qt_intrect r1, qt_intrect r2)
+qt_collision check_collisions(qt_object *obj1, qt_object *obj2, int *colwith)
 {
-    if (r1.x > r2.x && r1.x < r2.x + r2.w)
-        return (true);
-    if (r1.x + r1.w > r2.x && r1.x + r1.w < r2.x + r2.w)
-        return (true);
-    if (r1.x < r2.x && r1.x + r1.w > r2.x + r2.w)
-        return (true);
-    if (r1.x == r2.x)
-        return (true);
-    return (false);
-}
+    qt_intrect r1 = obj1->rect;
+    qt_intrect r2 = obj2->rect;
+    qt_collision col = COLLISION_MAX;
 
-bool collision_overlapy(qt_intrect r1, qt_intrect r2)
-{
-    if (r1.y - r1.h < r2.y && r1.y - r1.h > r2.y - r2.h)
-        return (true);
-    if (r1.y < r2.y && r1.y - r1.h > r2.y - r2.h)
-        return (true);
-    if (r1.y < r2.y && r1.y > r2.y - r2.h)
-        return (true);
-    if (r1.y == r2.y)
-        return (true);
-    return (false);
-}
-
-qt_collision collision_complete(qt_collision col, qt_intrect r1, qt_intrect r2)
-{
     if (collision_overlapy(r1, r2)) {
         if (r1.x <= r2.x)
-            col.distance_right = MIN(col.distance_right, r2.x - (r1.x + r1.w));
+            col.distance_right = r2.x - (r1.x + r1.w);
         if (r2.x <= r1.x)
-            col.distance_left = MIN(col.distance_left, r1.x - (r2.x + r2.w));
+            col.distance_left = r1.x - (r2.x + r2.w);
     }
     if (collision_overlapx(r1, r2)) {
         if (r1.y >= r2.y)
-            col.distance_down = MIN(col.distance_down, r1.y - r2.y - r1.h);
+            col.distance_down = r1.y - r2.y - r1.h;
         if (r2.y >= r1.y)
-            col.distance_top = MIN(col.distance_top, r2.y - r1.y - r2.h);
+            col.distance_top = r2.y - r1.y - r2.h;
     }
-    col.distance_down = MAX(0, col.distance_down);
-    col.distance_top = MAX(0, col.distance_top);
-    col.distance_left = MAX(0, col.distance_left);
-    col.distance_right = MAX(0, col.distance_right);
+    if (col.distance_right == 0 || col.distance_down == 0 ||
+        col.distance_left == 0 || col.distance_right == 0)
+        arr_add(colwith, obj2->id);
     return (col);
 }
 
-qt_collision collision_get_real_info(quadtree *tree, int id, qt_collision col)
+qt_collision sum_col(qt_collision col1, qt_collision col2)
+{
+    col1.distance_down = MAX(0, MIN(col1.distance_down, col2.distance_down));
+    col1.distance_top = MAX(0, MIN(col1.distance_top, col2.distance_top));
+    col1.distance_left = MAX(0, MIN(col1.distance_left, col2.distance_left));
+    col1.distance_right = MAX(0, MIN(col1.distance_right, col2.distance_right));
+    return (col1);
+}
+
+qt_collision collrec(quadtree *tree, int id, qt_collision col, int *collidewith)
 {
     qt_object *obj;
     qt_object *tmp;
-    int cap = tree->capacity;
     quadtree *child;
 
     if (tree->capacity == -1) {
         for (int i = 0; i < 4; i++) {
             child = &((quadtree *)tree->objects)[i];
-            col = collision_get_real_info(child, id, col);
+            col = collrec(child, id, col, collidewith);
         }
         return (col);
     }
     obj = qt_getobj(tree, id);
     if (!obj)
         return (col);
-    for (int i = 0; i < cap && ((qt_object *)tree->objects)[i].id != -1; i++) {
-        tmp = &((qt_object *)tree->objects)[i];
-        if (tmp->id == id || !collision_can_see(obj->layer, tmp->layer)) {
-            if (tmp->id != id)
-                printf("%d (id %d) VS %d (id %d)\n", obj->layer, id, tmp->layer, tmp->id);
+    for (int i = 0; i < tree->capacity && TREEOBJ_AT(i)->id != -1; i++) {
+        tmp = TREEOBJ_AT(i);
+        if (tmp->id == id || !collision_can_see(obj->layer, tmp->layer))
             continue;
-        }
-        col = collision_complete(col, obj->rect, tmp->rect);
+        col = sum_col(col, check_collisions(obj, tmp, collidewith));
     }
     return (col);
 }
 
 qt_collision collision_get_info(quadtree *tree, int id)
 {
-    qt_collision col = (qt_collision){MAXCOL, MAXCOL, MAXCOL, MAXCOL};
-    return (collision_get_real_info(tree, id, col));
+    qt_collision col = COLLISION_MAX;
+    static int collidewith[MAX_ENTITY + 1];
+
+    collidewith[0] = -1;
+    col = collrec(tree, id, col, collidewith);
+    col.collide_with = collidewith;
+    return (col);
 }

@@ -10,6 +10,7 @@
 #include <stdbool.h>
 
 #define MAXCOL 1024
+#define MAX_ENTITY 20
 
 typedef struct quadtree quadtree;
 
@@ -34,6 +35,7 @@ typedef struct qt_collision
     float distance_right;
     float distance_top;
     float distance_down;
+    int *collide_with;
 } qt_collision;
 
 struct quadtree
@@ -50,7 +52,3 @@ bool qt_collide(qt_intrect r1, qt_intrect r2);
 qt_object *qt_getobj(quadtree *tree, int id);
 int qt_update(quadtree *tree, qt_object obj);
 void qt_destroy(quadtree *tree);
-
-
-#define CAN_BE_SEEN 0b10
-#define CAN_SEE 0b01
