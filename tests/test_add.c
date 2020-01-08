@@ -32,10 +32,10 @@ Test(qt_add, with_split)
     qt_add(tree, (qt_object){2, {0, 0, 100, 100}});
     qt_add(tree, (qt_object){4, {550, 0, 100, 100}});
     cr_assert_eq(tree->capacity, -1);
-    child  = &((quadtree *)tree->objects)[0];
+    child = &((quadtree *)tree->objects)[0];
     cr_assert_eq(((qt_object *)child->objects)[0].id, 0);
     cr_assert_eq(((qt_object *)child->objects)[1].id, 1);
     cr_assert_eq(((qt_object *)child->objects)[2].id, 2);
-    child  = &((quadtree *)tree->objects)[1];
+    child = &((quadtree *)tree->objects)[1];
     cr_assert_eq(((qt_object *)child->objects)[0].id, 4);
 }
